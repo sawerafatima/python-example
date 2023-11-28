@@ -1,0 +1,32 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Adjust this line based on your requirements file
+    - name: Build and Push Docker Image
+      env:
+        USERNAME: ${{ secrets.MYUSERNAME }}
+        PASSWORD: ${{ secrets.MYTOKEN }}
+      run: |
+        docker build -t sawairaqureshi/pythonexample .
+        echo $PASSWORD | docker login -u $USERNAME --password-stdin
+        docker push sawairaqureshi/pythonexample
